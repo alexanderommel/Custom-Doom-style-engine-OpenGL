@@ -23,6 +23,11 @@ struct mapsidedef_t
 
 struct maplinedef_t
 {
+	bool has_cfs;
+	bool has_cbs;
+	bool has_ms;
+	bool has_ffs;
+	bool has_fbs;
 	struct mapvertex_t v1;
 	struct mapvertex_t v2;
 	struct mapsidedef_t ceil_front_sidedef;
@@ -46,6 +51,7 @@ struct mapsector_t
 	struct map_flatplane_t ceil_plane;
 	unsigned int ilumination;
 	bool compiled;
+	unsigned int num_vertices;
 };
 
 #endif
