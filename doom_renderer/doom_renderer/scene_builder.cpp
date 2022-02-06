@@ -1,17 +1,16 @@
 #include <custom/doom_data.h>
 #include <custom/doom_map.h>
 #include <custom/scenebuilder.h>
+#include <iostream>
 
-
-SceneBuilder::SceneBuilder(DoomMap *map_) {
-	this->map = map_;
+SceneBuilder::SceneBuilder() {
 }
 
 SceneBuilder::~SceneBuilder() {
 
 }
 
-mapsector_t* SceneBuilder::buildSector(
+void SceneBuilder::buildSector(
     std::vector<mapvertex_t> vertices,
     std::vector<std::string> ceil_front_texture_names,
     std::vector<std::string> ceil_back_texture_names,
@@ -22,76 +21,86 @@ mapsector_t* SceneBuilder::buildSector(
     std::string ceil_texture_name,
     int floor_height,
     int ceil_height,
-    unsigned int light_level
+    unsigned int light_level,
+    mapsector_t &target
 ) {
-    
+    std::cout << "(SceneBuilder) Creating sector\n";
     int num_vertices = vertices.size();
-    mapsector_t sector;
-    mapvertex_t* sector_vertices = new mapvertex_t[num_vertices];
-    maplinedef_t* sector_linedefs = new maplinedef_t[num_vertices];
-    map_flatplane_t floor_plane, ceil_plane;
+     //static mapsector_t mapsectorx;
+     //static mapsector_t* sector = &mapsectorx;
+     mapvertex_t* sector_vertices = new mapvertex_t[num_vertices];
+     maplinedef_t* sector_linedefs = new maplinedef_t[num_vertices];
+     map_flatplane_t floor_plane;
+     map_flatplane_t ceil_plane;
+    floor_plane.texture_name = floor_texture_name;
     floor_plane.texture_name = floor_texture_name;
     floor_plane.y_position = floor_height;
     ceil_plane.texture_name = ceil_texture_name;
     ceil_plane.y_position = ceil_height;
     for (size_t i = 0; i < num_vertices; i++)
     {
-        maplinedef_t linedef;
+        static maplinedef_t linedef;
+        linedef.has_cbs = false;
+        linedef.has_cfs = false;
+        linedef.has_fbs = false;
+        linedef.has_ffs = false;
+        linedef.has_ms = false;
         // middle sidedef
         if (middle_texture_names.size()>0)
         {
             std::string texture_name = middle_texture_names[i];
-            mapsidedef_t sidedef;
+            static mapsidedef_t sidedef;
             sidedef.texture_name = texture_name;
             linedef.middle_sidedef = sidedef;
-            linedef.has_cfs = false;
+            linedef.has_ms = true;
         }
         // ceil front sidedef
         if (ceil_front_texture_names.size() > 0)
         {
             std::string texture_name = ceil_front_texture_names[i];
-            mapsidedef_t sidedef;
+            static mapsidedef_t sidedef;
             sidedef.texture_name = texture_name;
             linedef.ceil_front_sidedef = sidedef;
-            linedef.has_cfs = true;
+            linedef.has_cfs=true;
         }
         // ceil back sidedef
         if (ceil_back_texture_names.size() > 0)
         {
             std::string texture_name = ceil_back_texture_names[i];
-            mapsidedef_t sidedef;
+            static mapsidedef_t sidedef;
             sidedef.texture_name = texture_name;
             linedef.ceil_back_sidedef = sidedef;
-            linedef.has_cfs = false;
+            linedef.has_cbs = true;
         }
         // floor front sidedef
         if (floor_front_texture_names.size() > 0)
         {
             std::string texture_name = floor_front_texture_names[i];
-            mapsidedef_t sidedef;
+            static mapsidedef_t sidedef;
             sidedef.texture_name = texture_name;
             linedef.floor_front_sidedef = sidedef;
-            linedef.has_cfs = false;
+            linedef.has_ffs=true;
         }
         // floor back sidedef
         if (floor_back_texture_names.size() > 0)
         {
             std::string texture_name = floor_back_texture_names[i];
-            mapsidedef_t sidedef;
+            static mapsidedef_t sidedef;
             sidedef.texture_name = texture_name;
             linedef.floor_back_sidedef = sidedef;
-            linedef.has_cfs = false;
+            linedef.has_fbs = true;
         }
         sector_linedefs[i] = linedef;
         sector_vertices[i] = vertices[i];
     }
     // fill data on sector
-    sector.compiled = false;
-    sector.vertices = sector_vertices;
-    sector.linedefs = sector_linedefs;
-    sector.ceil_plane = ceil_plane;
-    sector.floor_plane = floor_plane;
-    sector.ilumination = light_level;
-    mapsector_t *pointer = &sector;
-    return pointer;
+    target.compiled = false;
+    target.vertices = sector_vertices;
+    target.linedefs = sector_linedefs;
+    target.ceil_plane = ceil_plane;
+    target.floor_plane = floor_plane;
+    target.ilumination = light_level;
+    target.num_vertices = num_vertices;
+    //static mapsector_t *pointer = &sector;
+    //target = sector;
 }
