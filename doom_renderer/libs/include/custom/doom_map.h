@@ -9,6 +9,7 @@
 #include <custom/rendertree.h>
 #include <custom/resource_manager.h>
 #include <custom/doom_data.h>
+#include <custom/shader.h>
 
 class DoomMap
 {
@@ -18,9 +19,13 @@ class DoomMap
         void update();
         void render();
     private:
-        void compileSector(mapsector_t *sector); // Fills the null data on sidedefs
-        void init(unsigned int width_, unsigned int height_); // Inicializar arbol de renderizado
+        void compileSector(mapsector_t *sector, mapsector_t *parent); // Fills the null data on sidedefs
+        void init(); // Inicializar arbol de renderizado
+        int pnpoly(int nvert, mapvertex_t* vertices, mapvertex_t vertex);
+        bool isSubsector(mapsector_t* parent, mapsector_t* son);
         RenderTree* render_tree;
+        Shader* line_shader;
+        Shader* plane_shader;
 };
 
 #endif
