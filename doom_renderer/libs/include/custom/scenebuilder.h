@@ -11,9 +11,9 @@
 class SceneBuilder
 {
     public:
-        SceneBuilder(DoomMap *map_); 
+        SceneBuilder(); 
         ~SceneBuilder();
-        mapsector_t* buildSector(
+        void buildSector(
             std::vector<mapvertex_t> vertices,
             std::vector<std::string> ceil_front_texture_names,
             std::vector<std::string> ceil_back_texture_names,
@@ -24,11 +24,9 @@ class SceneBuilder
             std::string ceil_texture_name,
             int floor_height,
             int ceil_height,
-            unsigned int light_level
+            unsigned int light_level,
+            mapsector_t &target
             );
-        void render(); //It uses its children to do polygon substraction
-    private:
-        DoomMap *map;
 };
 
 #endif
