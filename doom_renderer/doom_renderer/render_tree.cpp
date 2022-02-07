@@ -2,11 +2,14 @@
 #include <custom/rendernode.h>
 #include <iostream>
 #include <custom/shader.h>
+#include <custom/plane_renderer.h>
 
 RenderTree::RenderTree(Shader *line_shader_, Shader *plane_shader_){
 	this->root_node = NULL;
 	this->line_shader = line_shader_;
 	this->plane_shader = plane_shader_;
+	static PlaneRenderer* plane_renderer_ = new PlaneRenderer(*(this->plane_shader));
+	this->plane_renderer = plane_renderer_;
 }
 
 RenderTree::~RenderTree(){
@@ -35,6 +38,7 @@ void RenderTree::postOrderRendering(RenderNode* node) {
 	std::vector<map_flatplane_t> ceil_clipping_planes;
 	std::vector<map_flatplane_t> floor_clipping_planes;
 	std::vector<mapvertex_t*> clipping_vertices;
+	std::vector<int> num_vertices;
 	for (size_t i = 0; i < node->children.size(); i++)
 	{
 		RenderNode* child = node->children[i];
@@ -46,12 +50,64 @@ void RenderTree::postOrderRendering(RenderNode* node) {
 		ceil_clipping_planes.push_back(ceil_clipplin_plane);
 		floor_clipping_planes.push_back(floor_clipping_plane);
 		clipping_vertices.push_back(node_vertices);
+		num_vertices.push_back(child->sector->num_vertices);
 		// Rendering child
 		postOrderRendering(child);
 	}
 	// Clip sectors using Stencil Test
-	// Render current node 'parent'
+	glEnable(GL_STENCIL_TEST);
+	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+	glDepthMask(GL_FALSE);
+	this->plane_shader->Use();
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+	glStencilFunc(GL_ALWAYS, 1, 0xFF);
+	glStencilMask(0xFF);
+	for (size_t i = 0; i < ceil_clipping_planes.size(); i++)
+	{
+
+		std::cout << "(RenderTree) Rendering Clipping Planes\n";
+		map_flatplane_t ceil_plane = ceil_clipping_planes[i];
+		map_flatplane_t floor_plane = floor_clipping_planes[i];
+		mapvertex_t* vertices = clipping_vertices[i];
+		this->plane_shader->Use();
+		// Render ceil plane
+		Texture2D ceil_texture = ResourceManager::GetTexture(ceil_plane.texture_name);
+		ceil_texture.Bind();
+		if (ceil_plane.y_position != node->sector->ceil_plane.y_position)
+		{
+			plane_renderer->render(ceil_texture,
+				vertices,
+				num_vertices[i],
+				node->sector->ceil_plane.y_position,
+				3,
+				glm::vec3(1.0f, 1.0f, 1.0f));
+		}
+		// Render floor plane
+		Texture2D floor_texture = ResourceManager::GetTexture(floor_plane.texture_name);
+		floor_texture.Bind();
+		if (floor_plane.y_position != node->sector->floor_plane.y_position)
+		{
+			plane_renderer->render(floor_texture,
+				vertices,
+				num_vertices[i],
+				node->sector->floor_plane.y_position,
+				3,
+				glm::vec3(1.0f, 1.0f, 1.0f));
+		}
+	}
+	std::cout << "(RenderTree) Rendering Parent Node with Clipping\n";
+	// Render Current Parent Node
+	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+	glStencilMask(0x00);
+	//glDisable(GL_DEPTH_TEST);
+	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+	glDepthMask(GL_TRUE);
 	node->render();
+	// Disable Stencil Test
+	glDisable(GL_STENCIL_TEST);
+	glStencilMask(0xFF);
+	glStencilFunc(GL_ALWAYS, 1, 0xFF);
+	glEnable(GL_DEPTH_TEST);
 }
 
 void RenderTree::trasversalOrderPrintContent() {
