@@ -8,7 +8,7 @@
 #include <custom/rendernode.h>
 #include <custom/doom_data.h>
 #include <custom/shader.h>
-
+#include <custom/plane_renderer.h>
 
 class RenderTree
 
@@ -23,6 +23,7 @@ class RenderTree
         RenderNode *root_node;
         Shader* line_shader;
         Shader* plane_shader;
+        PlaneRenderer* plane_renderer;
     private:
         void postOrderRendering(RenderNode* node);
 };
