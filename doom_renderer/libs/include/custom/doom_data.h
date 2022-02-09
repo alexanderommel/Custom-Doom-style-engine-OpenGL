@@ -46,6 +46,7 @@ struct map_flatplane_t
 struct mapsector_t
 {
 	struct mapvertex_t* vertices;
+	float* flatplane_vertex_array;
 	struct maplinedef_t* linedefs;
 	struct map_flatplane_t floor_plane;
 	struct map_flatplane_t ceil_plane;
