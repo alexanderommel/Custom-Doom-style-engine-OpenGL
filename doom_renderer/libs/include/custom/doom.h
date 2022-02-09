@@ -20,6 +20,7 @@ class Doom
         void init();
         void update(float dt);
         void render(); 
+        void updateProjectionAndView(glm::mat4 view, glm::mat4 proj);
     private:
         void loadTextures();
 };
