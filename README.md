@@ -1,6 +1,6 @@
 #  Doom-style renderer for OpenGL
 
-Very basic graphics engine to create doom-style scenes using doommapvertex arrays and string arrays for referencing textures. 
+Very basic graphics engine (No GUI editor) to create doom-style scenes using mapvertex arrays and string arrays for referencing textures. 
 
 For example, a sector may be created using the following data: 
 
