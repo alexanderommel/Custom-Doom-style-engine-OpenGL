@@ -9,7 +9,7 @@ For example, a sector may be created using the following data:
   mapvertex_t sector_vertex[4]:{{0,0},{10,0},{10,10},{0,10}},
   floor_height: 0,
   ceil_height: 128,
-  texture_names: {"metal","metal","metal",metal"}
+  texture_names: {"metal","metal","metal","metal"}
 }
 ```
 
