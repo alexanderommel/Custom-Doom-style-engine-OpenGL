@@ -2,6 +2,7 @@
 #include <custom/doom_map.h>
 #include <custom/scenebuilder.h>
 #include <iostream>
+#include <custom/resource_manager.h>
 
 SceneBuilder::SceneBuilder() {
 }
@@ -11,7 +12,7 @@ SceneBuilder::~SceneBuilder() {
 }
 
 void SceneBuilder::buildSector(
-    std::vector<mapvertex_t> vertices,
+    mapvertex_t* vertices,
     std::vector<std::string> ceil_front_texture_names,
     std::vector<std::string> ceil_back_texture_names,
     std::vector<std::string> middle_texture_names,
@@ -22,10 +23,11 @@ void SceneBuilder::buildSector(
     int floor_height,
     int ceil_height,
     unsigned int light_level,
-    mapsector_t &target
+    mapsector_t &target,
+    int num_vertices
 ) {
     std::cout << "(SceneBuilder) Creating sector\n";
-    int num_vertices = vertices.size();
+    //int num_vertices = vertices.size();
      //static mapsector_t mapsectorx;
      //static mapsector_t* sector = &mapsectorx;
      mapvertex_t* sector_vertices = new mapvertex_t[num_vertices];
@@ -101,6 +103,5 @@ void SceneBuilder::buildSector(
     target.floor_plane = floor_plane;
     target.ilumination = light_level;
     target.num_vertices = num_vertices;
-    //static mapsector_t *pointer = &sector;
-    //target = sector;
+    
 }
