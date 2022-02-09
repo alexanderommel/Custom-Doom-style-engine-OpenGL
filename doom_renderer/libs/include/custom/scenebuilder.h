@@ -14,7 +14,7 @@ class SceneBuilder
         SceneBuilder(); 
         ~SceneBuilder();
         void buildSector(
-            std::vector<mapvertex_t> vertices,
+            mapvertex_t* vertices,
             std::vector<std::string> ceil_front_texture_names,
             std::vector<std::string> ceil_back_texture_names,
             std::vector<std::string> middle_texture_names,
@@ -25,7 +25,8 @@ class SceneBuilder
             int floor_height,
             int ceil_height,
             unsigned int light_level,
-            mapsector_t &target
+            mapsector_t &target,
+            int num_vertices
             );
 };
 
