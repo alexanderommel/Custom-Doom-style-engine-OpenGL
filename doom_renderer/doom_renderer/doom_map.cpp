@@ -4,6 +4,9 @@
 #include <queue>
 #include <custom/resource_manager.h>
 
+bool isLinedefSharedWithSector(maplinedef_t* linedef, mapsector_t* sector, mapsector_t* neighbor_sector_);
+void setNeighborSectors(mapsector_t* s1, std::vector<RenderNode*> neighbors);
+
 DoomMap::DoomMap() {
 	init();
 	this->render_tree = new RenderTree(this->line_shader, this->plane_shader);
@@ -79,6 +82,11 @@ void DoomMap::compileSector(mapsector_t* sector, mapsector_t* parent) {
 				sector->linedefs[i].floor_back_sidedef.height = floor_height;
 			}
 		}
+		//Child sector inherits parent sector ilumination
+		sector->parent_ilumination = parent->ilumination;
+		//For each linedef, test if it is a neighbor linedef
+		// if true then set linedef.shared=true
+		// linedef.neighbor_sector=&sector
 	}
 
 
@@ -136,8 +144,8 @@ void DoomMap::compileSector(mapsector_t* sector, mapsector_t* parent) {
 
 // Add the mapsector to the respective node in the tree
 bool DoomMap::addSectorToRenderTree(mapsector_t* sector) {
-	// The next sectors MUST be subsectors of the root sector
 	std::cout << "(DoomMap) Adding sector to the render tree...\n";
+	// Test if the tree has a root sector
 	if (this->render_tree->isRootNodeNull())
 	{
 		if (sector->linedefs[0].has_ms==true)
@@ -190,7 +198,11 @@ bool DoomMap::addSectorToRenderTree(mapsector_t* sector) {
 			//std::cout << "(DoomMap) No child is parent of current sector\n";
 			std::cout << "(DoomMap) Linking this sector to the current parent sector\n";
 			std::cout << "(DoomMap) Current parent id is: " << current->id << "\n";
+			// Compile basic info
 			compileSector(sector, current->sector);
+			// Compile info related to lights
+			setNeighborSectors(sector, current->children);
+
 			int node_id = depth*1000;
 			node_id = node_id + breadth;
 			std::cout << "(DoomMap) Generating new id with id=" << node_id << "\n";
@@ -213,12 +225,12 @@ bool DoomMap::isSubsector(mapsector_t* parent, mapsector_t* sector) {
 	int subsector_test = 0;
 	for (size_t i = 0; i < sector->num_vertices; i++)
 	{
-		std::cout << "(DoomMap) Testing vertex <" << sector->vertices[i].x << "," << sector->vertices[i].z << ">\n";
+		//std::cout << "(DoomMap) Testing vertex <" << sector->vertices[i].x << "," << sector->vertices[i].z << ">\n";
 		int is_subsector = pnpoly(parent->num_vertices,parent->vertices, sector->vertices[i]);
 		subsector_test = subsector_test + is_subsector;
 		//std::cout << "(DoomMap) Status: " << is_subsector << "\n";
 	}
-	std::cout << "(DoomMap) Subsector test is ->" << subsector_test << "\n";
+	//std::cout << "(DoomMap) Subsector test is ->" << subsector_test << "\n";
 	if (subsector_test==sector->num_vertices)
 	{
 		return true;
@@ -246,4 +258,47 @@ void DoomMap::render() {
 	std::cout << "(DoomMap) Map rendering\n";
 	this->render_tree->render();
 	//this->render_tree->trasversalOrderPrintContent();
+}
+
+void setNeighborSectors(mapsector_t* s1, std::vector<RenderNode*> neighbors) {
+	// Neighbor sectors are sectors that share a linedef
+	//std::cout << "(DoomMap) Searching neighbor sectors\n";
+	//std::cout << "(DoomMap) Sector 1 has " << s1->num_vertices << " linedefs\n";
+	for (size_t i = 0; i < s1->num_vertices; i++)
+	{
+		maplinedef_t* candidate_linedef = &s1->linedefs[i];
+		//std::cout << "(DoomMap) Testing linedef with vertices  (<" << candidate_linedef.v1.x << "," << candidate_linedef.v1.z << ">," <<
+			//"<" << candidate_linedef.v2.x << "," << candidate_linedef.v2.z << ">)\n";
+		int num_neighbors = neighbors.size();
+		for (size_t j = 0; j < num_neighbors; j++)
+		{
+			bool found_neighbor = isLinedefSharedWithSector(candidate_linedef, s1, neighbors[j]->sector);
+			if (found_neighbor)
+			{
+				//std::cout << "(DoomMap) Neighbor found for linedef!\n";
+				break;
+			}
+		}
+	}
+	//std::cout << "(DoomMap) Search finished!\n";
+}
+
+bool isLinedefSharedWithSector(maplinedef_t* linedef, mapsector_t* sector, mapsector_t* neighbor_sector_) {
+	//std::cout << "(DoomMap) Testing shared status\n";
+	for (size_t i = 0; i < neighbor_sector_->num_vertices; i++)
+	{
+		maplinedef_t neighbor_linedef = neighbor_sector_->linedefs[i];
+		if ((linedef->v1.x==neighbor_linedef.v2.x) &&
+			(linedef->v2.x == neighbor_linedef.v1.x) &&
+			(linedef->v1.z == neighbor_linedef.v2.z) &&
+			(linedef->v2.z == neighbor_linedef.v1.z))
+		{
+			linedef->is_shared = true;
+			linedef->neighbor_sector = neighbor_sector_;
+			neighbor_linedef.is_shared = true;
+			neighbor_linedef.neighbor_sector = sector;
+			return true;
+		}
+	}
+	return false;
 }
