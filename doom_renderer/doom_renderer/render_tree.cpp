@@ -24,7 +24,7 @@ bool RenderTree::isRootNodeNull() {
 }
 
 void RenderTree::render() {
-	std::cout << "(RenderTree) Rendering Tree..\n";
+	//std::cout << "(RenderTree) Rendering Tree..\n";
 	//this->root_node->render();
 	postOrderRendering(this->root_node);
 }
@@ -61,11 +61,12 @@ void RenderTree::postOrderRendering(RenderNode* node) {
 	// Clip sectors using Stencil Test
 	glEnable(GL_STENCIL_TEST);
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-	glDepthMask(GL_FALSE);
+	glDepthMask(GL_TRUE);
 	this->plane_shader->Use();
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 	glStencilFunc(GL_ALWAYS, 1, 0xFF);
 	glStencilMask(0xFF);
+	//glDisable(GL_DEPTH_TEST);
 	for (size_t i = 0; i < ceil_clipping_planes.size(); i++)
 	{
 
@@ -87,7 +88,7 @@ void RenderTree::postOrderRendering(RenderNode* node) {
 				num_vertices[i],
 				node->sector->ceil_plane.y_position,
 				3,
-				glm::vec3(1.0f, 1.0f, 1.0f), child_vertex_array,10);
+				glm::vec3(1.0f, 1.0f, 1.0f), child_vertex_array,10,0.0);
 		}
 
 		// Render floor plane
@@ -100,11 +101,11 @@ void RenderTree::postOrderRendering(RenderNode* node) {
 				num_vertices[i],
 				node->sector->floor_plane.y_position,
 				3,
-				glm::vec3(1.0f, 1.0f, 1.0f), child_vertex_array,10);
+				glm::vec3(1.0f, 1.0f, 1.0f), child_vertex_array,10,0.0);
 		}
 		
 	}
-	std::cout << "(RenderTree) Rendering Parent Node with Clipping\n";
+	//std::cout << "(RenderTree) Rendering Parent Node with Clipping\n";
 	// Render Current Parent Node
 	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 	glStencilMask(0x00);
@@ -116,14 +117,16 @@ void RenderTree::postOrderRendering(RenderNode* node) {
 	glDepthMask(GL_TRUE);
 	node->render();
 	// Disable Stencil Test
-	glDisable(GL_STENCIL_TEST);
-	glStencilMask(0xFF);
-	glStencilFunc(GL_ALWAYS, 1, 0xFF);
-	glEnable(GL_DEPTH_TEST);
+
+
+	//glDisable(GL_STENCIL_TEST);
+	//glStencilMask(0xFF);
+	//glStencilFunc(GL_ALWAYS, 1, 0xFF);
+	//glEnable(GL_DEPTH_TEST);
 }
 
 void RenderTree::trasversalOrderPrintContent() {
-	std::cout << "(RenderTree) Printing content of the tree..\n";
+	//std::cout << "(RenderTree) Printing content of the tree..\n";
 	if (isRootNodeNull())
 	{
 		std::cout << "No root node linked\n";
