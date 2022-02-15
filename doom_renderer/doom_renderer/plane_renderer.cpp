@@ -16,7 +16,7 @@ PlaneRenderer::~PlaneRenderer()
 }
 
 void PlaneRenderer::render(Texture2D& texture, mapvertex_t* vertices, unsigned int num_vertices,
-    float height, int scale_factor, glm::vec3 color, float* vertex_array, float plane_width)
+    float height, int scale_factor, glm::vec3 color, float* vertex_array, float plane_width, float light_level)
 {
 
     //std::cout << "(PlaneRenderer) Rendering plane...\n";
@@ -52,6 +52,7 @@ void PlaneRenderer::render(Texture2D& texture, mapvertex_t* vertices, unsigned i
     this->shader.SetFloat("height", height);
     this->shader.SetFloat("x_scale_factor", x_scale_factor);
     this->shader.SetFloat("y_scale_factor", y_scale_factor);
+    this->shader.SetFloat("ambientStrength", light_level);
 
     // render textured quad
     this->shader.SetVector3f("plane_color", color);

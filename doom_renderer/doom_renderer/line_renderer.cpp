@@ -13,7 +13,7 @@ LineRenderer::~LineRenderer()
     glDeleteVertexArrays(1, &this->VAO);
 }
 
-void LineRenderer::render(Texture2D& texture, mapvertex_t v1, mapvertex_t v2, float heigth, float y_position, glm::vec3 color)
+void LineRenderer::render(Texture2D& texture, mapvertex_t v1, mapvertex_t v2, float heigth, float y_position, glm::vec3 color, float light_level)
 {
     this->shader.Use();
     //std::cout << "(LineRenderer) v1=<" << v1.x << "," << v1.z << ">\n";
@@ -69,6 +69,7 @@ void LineRenderer::render(Texture2D& texture, mapvertex_t v1, mapvertex_t v2, fl
     this->shader.SetVector3f("sidedef_color", color);
     this->shader.SetFloat("x_scale_factor", x_scale_factor);
     this->shader.SetFloat("y_scale_factor", y_scale_factor);
+    this->shader.SetFloat("ambientStrength", light_level);
 
     glActiveTexture(GL_TEXTURE0);
     texture.Bind();
