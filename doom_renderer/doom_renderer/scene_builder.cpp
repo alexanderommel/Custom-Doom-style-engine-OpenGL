@@ -101,7 +101,14 @@ void SceneBuilder::buildSector(
     target.linedefs = sector_linedefs;
     target.ceil_plane = ceil_plane;
     target.floor_plane = floor_plane;
-    target.ilumination = light_level;
+    // light level goes from 0 to 1, but expresed from range 0 to 256
+    float intensity = light_level / 256.0;
+    std::cout << "(SceneBuilder) intensity-> " << intensity << "\n";
+    if (intensity<0 || intensity>1)
+    {
+        intensity = 1.0;
+    }
+    target.ilumination = intensity;
     target.num_vertices = num_vertices;
     
 }
