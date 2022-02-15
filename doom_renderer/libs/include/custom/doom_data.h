@@ -35,6 +35,8 @@ struct maplinedef_t
 	struct mapsidedef_t middle_sidedef;
 	struct mapsidedef_t floor_front_sidedef;
 	struct mapsidedef_t floor_back_sidedef;
+	bool is_shared;
+	struct mapsector_t* neighbor_sector;
 };
 
 struct map_flatplane_t
@@ -50,7 +52,8 @@ struct mapsector_t
 	struct maplinedef_t* linedefs;
 	struct map_flatplane_t floor_plane;
 	struct map_flatplane_t ceil_plane;
-	unsigned int ilumination;
+	float ilumination;
+	float parent_ilumination;
 	bool compiled;
 	unsigned int num_vertices;
 };

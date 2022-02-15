@@ -22,7 +22,8 @@ public:
         mapvertex_t v2, // xz coordinates
         float heigth,
 	    float y_position, // point on y axis where the wall is raised
-        glm::vec3 color = glm::vec3(1.0f));
+        glm::vec3 color,
+        float light_level);
 private:
     Shader shader; 
     unsigned int VAO;

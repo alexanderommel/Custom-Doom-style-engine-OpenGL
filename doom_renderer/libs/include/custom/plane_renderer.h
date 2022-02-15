@@ -25,7 +25,8 @@ public:
 	    int scale_factor,
         glm::vec3 color,
         float* vertex_array,
-        float plane_width
+        float plane_width,
+        float light_level
     );
 private:
     Shader shader; 
