@@ -34,6 +34,13 @@ void RenderNode::renderMiddleSidedef() {
 	{
 		//std::cout << "(RenderNode) Rendering sidedef " << i << "\n";
 		this->line_shader->Use();
+		float direction = -1.0f;
+		if (this->sector->counterclock==true)
+		{
+			direction = direction * -1;
+		}
+		glm::vec3 normalVector = direction * this->sector->linedefs[i].normal;
+
 		Texture2D tex1 = ResourceManager::GetTexture(this->sector->linedefs[i].middle_sidedef.texture_name);
 		tex1.Bind();
 		line_renderer->render(tex1,
@@ -41,7 +48,8 @@ void RenderNode::renderMiddleSidedef() {
 			this->sector->linedefs[i].v2,
 			this->sector->linedefs[i].middle_sidedef.height,
 			this->sector->linedefs[i].middle_sidedef.y_position,
-			glm::vec3(1.0f, 1.0f, 1.0f),this->sector->ilumination);
+			glm::vec3(1.0f, 1.0f, 1.0f),this->sector->ilumination,
+			normalVector,true);
 		glDisable(GL_CULL_FACE);
 	}
 }
@@ -60,6 +68,12 @@ void RenderNode::renderCeilFrontSidedef() {
 		}
 		//std::cout << "(RenderNode) Rendering sidedef " << i << "\n";
 		this->line_shader->Use();
+		float direction = 1.0f;
+		if (this->sector->counterclock==true)
+		{
+			direction = direction * -1;
+		}
+		glm::vec3 normalVector = direction * this->sector->linedefs[i].normal;
 		Texture2D tex1 = ResourceManager::GetTexture(this->sector->linedefs[i].ceil_front_sidedef.texture_name);
 		tex1.Bind();
 		line_renderer->render(tex1,
@@ -67,7 +81,8 @@ void RenderNode::renderCeilFrontSidedef() {
 			this->sector->linedefs[i].v2,
 			this->sector->linedefs[i].ceil_front_sidedef.height,
 			this->sector->linedefs[i].ceil_front_sidedef.y_position,
-			glm::vec3(1.0f, 1.0f, 1.0f), this->sector->parent_ilumination);
+			glm::vec3(1.0f, 1.0f, 1.0f), this->sector->parent_ilumination,
+			normalVector,false);
 	}
 }
 
@@ -85,6 +100,12 @@ void RenderNode::renderCeilBackSidedef() {
 		}
 		//std::cout << "(RenderNode) Rendering sidedef " << i << "\n";
 		this->line_shader->Use();
+		float direction = -1.0f;
+		if (this->sector->counterclock==true)
+		{
+			direction = direction * -1;
+		}
+		glm::vec3 normalVector = direction * this->sector->linedefs[i].normal;
 		Texture2D tex1 = ResourceManager::GetTexture(this->sector->linedefs[i].ceil_back_sidedef.texture_name);
 		tex1.Bind();
 		line_renderer->render(tex1,
@@ -92,7 +113,8 @@ void RenderNode::renderCeilBackSidedef() {
 			this->sector->linedefs[i].v2,
 			this->sector->linedefs[i].ceil_back_sidedef.height,
 			this->sector->linedefs[i].ceil_back_sidedef.y_position,
-			glm::vec3(1.0f, 1.0f, 1.0f), this->sector->ilumination);
+			glm::vec3(1.0f, 1.0f, 1.0f), this->sector->ilumination,
+			normalVector,false);
 	}
 }
 
@@ -102,9 +124,11 @@ void RenderNode::renderFloorFrontSidedef() {
 	{
 		if (this->sector->linedefs[i].is_shared)
 		{
-			if (this->sector->linedefs[i].neighbor_sector->floor_plane.y_position >=
-				this->sector->floor_plane.y_position)
+
+			if (this->sector->floor_plane.y_position < this->sector->linedefs[i]
+				.neighbor_sector->floor_plane.y_position)
 			{
+
 				continue;
 			}
 		}
@@ -122,6 +146,12 @@ void RenderNode::renderFloorFrontSidedef() {
 			//sidedef_ilumination_level = 0.0f;
 		}
 		this->line_shader->Use();
+		float direction = 1.0f;
+		if (this->sector->counterclock==true)
+		{
+			direction = direction * -1.0;
+		}
+		glm::vec3 normalVector = direction * this->sector->linedefs[i].normal;
 		Texture2D tex1 = ResourceManager::GetTexture(this->sector->linedefs[i].floor_front_sidedef.texture_name);
 		tex1.Bind();
 		line_renderer->render(tex1,
@@ -129,7 +159,8 @@ void RenderNode::renderFloorFrontSidedef() {
 			this->sector->linedefs[i].v2,
 			this->sector->linedefs[i].floor_front_sidedef.height,
 			this->sector->linedefs[i].floor_front_sidedef.y_position,
-			glm::vec3(1.0f, 1.0f, 1.0f), sidedef_ilumination_level);
+			glm::vec3(1.0f, 1.0f, 1.0f), sidedef_ilumination_level,
+			normalVector,false);
 	}
 }
 
@@ -147,6 +178,13 @@ void RenderNode::renderFloorBackSidedef() {
 		}
 		//std::cout << "(RenderNode) Rendering sidedef " << i << "\n";
 		this->line_shader->Use();
+		// normal vector
+		float direction = -1.0f;
+		if (this->sector->counterclock)
+		{
+			direction = direction * -1;
+		}
+		glm::vec3 normalVector = direction * this->sector->linedefs[i].normal;
 		Texture2D tex1 = ResourceManager::GetTexture(this->sector->linedefs[i].floor_back_sidedef.texture_name);
 		tex1.Bind();
 		line_renderer->render(tex1,
@@ -154,7 +192,8 @@ void RenderNode::renderFloorBackSidedef() {
 			this->sector->linedefs[i].v2,
 			this->sector->linedefs[i].floor_back_sidedef.height,
 			this->sector->linedefs[i].floor_back_sidedef.y_position,
-			glm::vec3(1.0f, 1.0f, 1.0f), this->sector->ilumination);
+			glm::vec3(1.0f, 1.0f, 1.0f), this->sector->ilumination,
+			normalVector,false);
 	}
 }
 
@@ -163,6 +202,9 @@ void RenderNode::renderCeilPlane() {
 	//std::cout << "(RenderNode) Sector id is -> " << this->id << "\n";
 	float sector_width = abs(this->sector->vertices[0].x - this->sector->vertices[2].x);
 	this->plane_shader->Use();
+	// normal vector
+	float direction = -1.0f;
+	glm::vec3 normalVector = { 0.0f,direction,0.0f };
 	Texture2D ceil_texture = ResourceManager::GetTexture(this->sector->ceil_plane.texture_name);
 	ceil_texture.Bind();
 	plane_renderer->render(ceil_texture,
@@ -171,7 +213,8 @@ void RenderNode::renderCeilPlane() {
 		this->sector->ceil_plane.y_position,
 		6,
 		glm::vec3(1.0f, 1.0f, 1.0f), 
-		this->sector->flatplane_vertex_array,sector_width,this->sector->ilumination);
+		this->sector->flatplane_vertex_array,sector_width,this->sector->ilumination,
+		normalVector);
 }
 
 void RenderNode::renderFloorPlane() {
@@ -180,6 +223,9 @@ void RenderNode::renderFloorPlane() {
 	// distance between two vertices to estimate sector width (Temporal)
 	float sector_width = abs(this->sector->vertices[0].x - this->sector->vertices[2].x);
 	this->plane_shader->Use();
+	// normal vector
+	float direction = 1.0f;
+	glm::vec3 normalVector = { 0.0f,direction,0.0 };
 	Texture2D floor_texture = ResourceManager::GetTexture(this->sector->floor_plane.texture_name);
 	floor_texture.Bind();
 	plane_renderer->render(floor_texture,
@@ -188,17 +234,25 @@ void RenderNode::renderFloorPlane() {
 		this->sector->floor_plane.y_position,
 		6,
 		glm::vec3(1.0f, 1.0f, 1.0f),this->sector->flatplane_vertex_array, sector_width,
-		this->sector->ilumination);
+		this->sector->ilumination,
+		normalVector);
 }
 
-void RenderNode::render() {
+void RenderNode::render(bool renderFloor, bool renderCeil, bool renderFloorFront) {
 
 	//std::cout << "(RenderNode) Rendering node with id->" << this->id << "\n";
 
 	// Render flat planes
 	//glEnable(GL_DEPTH_TEST);
-	renderCeilPlane();
-	renderFloorPlane();
+	
+	if (renderCeil==true)
+	{
+		renderCeilPlane();
+	}
+	if (renderFloor == true)
+	{
+		renderFloorPlane();
+	}
 
 	glDisable(GL_STENCIL_TEST);
 	glStencilMask(0xFF);
@@ -221,7 +275,10 @@ void RenderNode::render() {
 		}
 		if (this->sector->linedefs->has_ffs)
 		{
-			renderFloorFrontSidedef();
+			if (renderFloorFront)
+			{
+				renderFloorFrontSidedef();
+			}
 		}
 		if (this->sector->linedefs->has_fbs)
 		{
