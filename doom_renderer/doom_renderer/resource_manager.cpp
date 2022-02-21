@@ -31,9 +31,9 @@ Shader ResourceManager::GetShader(std::string name)
     return Shaders[name];
 }
 
-Texture2D ResourceManager::LoadTexture(const char* file, bool alpha, std::string name)
+Texture2D ResourceManager::LoadTexture(const char* file, bool alpha, std::string name, float shininess, bool noSpecularColor)
 {
-    Textures[name] = loadTextureFromFile(file, alpha);
+    Textures[name] = loadTextureFromFile(file, alpha, shininess, noSpecularColor);
     return Textures[name];
 }
 
@@ -89,7 +89,7 @@ Shader ResourceManager::loadShaderFromFile(const char* vShaderFile, const char* 
     return shader;
 }
 
-Texture2D ResourceManager::loadTextureFromFile(const char* file, bool alpha)
+Texture2D ResourceManager::loadTextureFromFile(const char* file, bool alpha, float shininess, bool noSpecularColor)
 {
     // create texture object
     Texture2D texture;
@@ -105,7 +105,7 @@ Texture2D ResourceManager::loadTextureFromFile(const char* file, bool alpha)
     data = stbi_load(file, &width, &height, &nrChannels, 0);
     std::cout << "Texture Width: " << width << "\n";
     // now generate texture
-    texture.Generate(width, height, data);
+    texture.Generate(width, height, data, shininess, noSpecularColor);
     // and finally free image data
     stbi_image_free(data);
     return texture;
