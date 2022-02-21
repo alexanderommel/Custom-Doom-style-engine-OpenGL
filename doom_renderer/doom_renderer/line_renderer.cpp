@@ -13,12 +13,12 @@ LineRenderer::~LineRenderer()
     glDeleteVertexArrays(1, &this->VAO);
 }
 
-void LineRenderer::render(Texture2D& texture, mapvertex_t v1, mapvertex_t v2, float heigth, float y_position, glm::vec3 color, float light_level)
+void LineRenderer::render(Texture2D& texture, mapvertex_t v1, mapvertex_t v2, float heigth, 
+    float y_position, glm::vec3 color, float light_level,
+    glm::vec3 normalVector, bool verbose)
 {
     this->shader.Use();
-    //std::cout << "(LineRenderer) v1=<" << v1.x << "," << v1.z << ">\n";
-    //std::cout << "(LineRenderer) v2=<" << v2.x << "," << v2.z << ">\n";
-    //std::cout << "(LineRenderer) texture_id: " << texture.ID << "\n";
+    
     // Initialize values
     glm::vec2 vertex1 = glm::vec2(v1.x, v1.z);
     glm::vec2 vertex2 = glm::vec2(v2.x, v2.z);
@@ -31,8 +31,22 @@ void LineRenderer::render(Texture2D& texture, mapvertex_t v1, mapvertex_t v2, fl
     // <+,+> -> <-,->
     // <-,+> -> <+,->
     // Todas las rotaciones siempre se aplican desde el eje en sentido antihorario
-    //std::cout << "X coord of world: " << opengl_position.x << "\n";
-    //std::cout << "Y coord of world: " << opengl_position.y << "\n";
+    /*
+    float reflejar_normal = 1.0f;
+    if (opengl_position.y <0 && opengl_position.x==0)
+    {
+        reflejar_normal = -1.0f;
+    }
+    if (opengl_position.x<0 && opengl_position.y ==0)
+    {
+        reflejar_normal = -1.0f;
+    }
+    if (opengl_position.x>0 && opengl_position.y==0)
+    {
+        reflejar_normal = -1.0f;
+    }
+    */
+    
     if (opengl_position.x > 0 && opengl_position.y > 0)
     {
         opengl_position = opengl_position.operator*=(-1);
@@ -54,10 +68,19 @@ void LineRenderer::render(Texture2D& texture, mapvertex_t v1, mapvertex_t v2, fl
     model = glm::translate(model, glm::vec3(world_position.x, 0.5 * heigth, world_position.y));
     model = glm::rotate(model, angle, glm::vec3(0.0f, 1.0f, 0.0f)); // then rotate
 
-    
+    int kk = 0;
+    for (size_t i = 0; i < 20; i++)
+    {
+        kk = kk + 2;
+    }
+
+
     model = glm::scale(model, glm::vec3(width, heigth, 1.0f)); // last scale
 
     this->shader.SetMatrix4("model", model);
+
+
+    this->shader.SetVector3f("aNormal", normalVector);
 
     float y_scale_factor = heigth / texture.Height;
     float x_scale_factor = width / texture.Width;
@@ -71,6 +94,9 @@ void LineRenderer::render(Texture2D& texture, mapvertex_t v1, mapvertex_t v2, fl
     this->shader.SetFloat("y_scale_factor", y_scale_factor);
     this->shader.SetFloat("ambientStrength", light_level);
 
+    // material properties
+    this->shader.SetFloat("material.shininess", texture.shininess);
+    this->shader.SetInteger("noSpecular", texture.noSpecularColor);
     glActiveTexture(GL_TEXTURE0);
     texture.Bind();
     glBindVertexArray(this->VAO);
