@@ -26,14 +26,42 @@ bool RenderTree::isRootNodeNull() {
 void RenderTree::render() {
 	//std::cout << "(RenderTree) Rendering Tree..\n";
 	//this->root_node->render();
-	postOrderRendering(this->root_node);
+	postOrderRendering(this->root_node,nullptr);
 }
 
-void RenderTree::postOrderRendering(RenderNode* node) {
+void RenderTree::postOrderRendering(RenderNode* node, RenderNode* parent) {
 	if (node->hasChildren() == false)
 	{
-		node->render();
-		return;
+		if (parent==nullptr)
+		{
+
+			node->render(true,true, true);
+			return;
+		}
+		if (parent->sector->floor_plane.y_position!=node->sector->floor_plane.y_position
+			&& parent->sector->ceil_plane.y_position!=node->sector->ceil_plane.y_position)
+		{
+			node->render(true, true, true);
+			return;
+		}
+		if (parent->sector->floor_plane.y_position == node->sector->floor_plane.y_position
+			&& parent->sector->ceil_plane.y_position != node->sector->ceil_plane.y_position)
+		{
+			node->render(false, true, true);
+			return;
+		}
+		if (parent->sector->floor_plane.y_position != node->sector->floor_plane.y_position
+			&& parent->sector->ceil_plane.y_position == node->sector->ceil_plane.y_position)
+		{
+			node->render(true, false, true);
+			return;
+		}
+		if (parent->sector->floor_plane.y_position == node->sector->floor_plane.y_position
+			&& parent->sector->ceil_plane.y_position == node->sector->ceil_plane.y_position)
+		{
+			node->render(false, false, true);
+			return;
+		}
 	}
 	std::vector<map_flatplane_t> ceil_clipping_planes;
 	std::vector<map_flatplane_t> floor_clipping_planes;
@@ -54,7 +82,7 @@ void RenderTree::postOrderRendering(RenderNode* node) {
 		child_vertex_arrays.push_back(child->sector->flatplane_vertex_array);
 		num_vertices.push_back(child->sector->num_vertices);
 		// Rendering child
-		postOrderRendering(child);
+		postOrderRendering(child,node);
 	}
 
 	
@@ -81,6 +109,10 @@ void RenderTree::postOrderRendering(RenderNode* node) {
 		//std::cout << "(RenderTree) Rendering Clipping Ceil Plane\n";
 		Texture2D ceil_texture = ResourceManager::GetTexture(ceil_plane.texture_name);
 		ceil_texture.Bind();
+		// normal vector
+		float directionC = -1.0f;
+		glm::vec3 normalVectorC = { 0.0f,0.0f,directionC };
+		//
 		if (ceil_plane.y_position != node->sector->ceil_plane.y_position)
 		{
 			plane_renderer->render(ceil_texture,
@@ -88,12 +120,16 @@ void RenderTree::postOrderRendering(RenderNode* node) {
 				num_vertices[i],
 				node->sector->ceil_plane.y_position,
 				3,
-				glm::vec3(1.0f, 1.0f, 1.0f), child_vertex_array,10,0.0);
+				glm::vec3(1.0f, 1.0f, 1.0f), child_vertex_array,10,0.0,
+				normalVectorC);
 		}
 
 		// Render floor plane
 		Texture2D floor_texture = ResourceManager::GetTexture(floor_plane.texture_name);
 		floor_texture.Bind();
+		// normal vector
+		float direction = 1.0f;
+		glm::vec3 normalVector = { 0.0f,0.0f,direction };
 		if (floor_plane.y_position != node->sector->floor_plane.y_position)
 		{
 			plane_renderer->render(floor_texture,
@@ -101,7 +137,8 @@ void RenderTree::postOrderRendering(RenderNode* node) {
 				num_vertices[i],
 				node->sector->floor_plane.y_position,
 				3,
-				glm::vec3(1.0f, 1.0f, 1.0f), child_vertex_array,10,0.0);
+				glm::vec3(1.0f, 1.0f, 1.0f), child_vertex_array,10,0.0,
+				normalVector);
 		}
 		
 	}
@@ -115,7 +152,14 @@ void RenderTree::postOrderRendering(RenderNode* node) {
 
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 	glDepthMask(GL_TRUE);
-	node->render();
+	if (node->id==0)
+	{
+		node->render(true, false, true);
+	}
+	else {
+		node->render(true, true, true);
+	}
+	
 	// Disable Stencil Test
 
 
