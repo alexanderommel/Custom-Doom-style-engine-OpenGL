@@ -34,7 +34,7 @@ struct PointLight {
     vec3 diffuse;
     vec3 specular;
 };  
-#define NR_POINT_LIGHTS 20 
+#define NR_POINT_LIGHTS 30
 uniform PointLight pointLights[NR_POINT_LIGHTS];
 
 // material ambient and diffuse is equal to surface color

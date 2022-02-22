@@ -152,7 +152,7 @@ void Doom::loadTextures() {
     ResourceManager::LoadTexture("textures/hd/slime01.png", true, "slime01",0.3,true);
     ResourceManager::LoadTexture("textures/hd/bigdoor5.png", true, "bigdoor5",0.1,true);
     ResourceManager::LoadTexture("textures/hd/bigdoor6.png", true, "bigdoor6",0.1,true);
-    //ResourceManager::LoadTexture("textures/hd/bigdoor7.png", true, "bigdoor7");
+    ResourceManager::LoadTexture("textures/hd/bigdoor7.png", true, "skulldoor7", 0.3, true);
     ResourceManager::LoadTexture("textures/hd/marbfac3.png", true, "bigdoor7",marble_faces_shininess,false);
     ResourceManager::LoadTexture("textures/hd/marbface.png", true, "marbface",marble_faces_shininess,false);
     //marbface
@@ -194,5 +194,17 @@ void Doom::loadTextures() {
 
     ResourceManager::LoadTexture("textures/hd/hdgstone.png", true, "hdgstone", 0.4, false);
     ResourceManager::LoadTexture("textures/hd/hdmarbgray.png", true, "hdmarbgray", 0.4, true);
+    ResourceManager::LoadTexture("textures/hd/hdmarbgrayface.png", true, "hdmarbgrayface", 0.4, false);
     ResourceManager::LoadTexture("textures/hd/hdblueskull.png", true, "hdblueskull", 0.3, true);
+    ResourceManager::LoadTexture("textures/hd/hdfloor.png", true, "hdfloor", 0.3, true);
+    ResourceManager::LoadTexture("textures/hd/hdwhiterocks.png", true, "hdwhiterocks", 0.3, true);
+    //
+    ResourceManager::LoadTexture("textures/hd/hdpoisonwall.png", true, "hdpoisonskull", 0.3, true);
+    ResourceManager::LoadTexture("textures/hd/hdpoisonwallnoskull.png", true, "hdpoisonwall", 0.3, true);
+    ResourceManager::LoadTexture("textures/hd/hdwoodenmetal.png", true, "hdwooden", 0.3, true);
+    ResourceManager::LoadTexture("textures/hd/hdblood.png", true, "hdblood", 0.3, true);
+    ResourceManager::LoadTexture("textures/hd/hdwater.png", true, "hdwater", 0.3, true);
+    ResourceManager::LoadTexture("textures/hd/flat5_4.png", true, "flat5_4", 0.3, false);
+    //ResourceManager::LoadTexture("textures/hd/hdgstoneblood.jpg", true, "hdgstoneblood", 0.4, true);
+    //ResourceManager::LoadTexture("textures/hd/hdwallbloods.jpg", true, "hdwallbloods", 0.4, true);
 }

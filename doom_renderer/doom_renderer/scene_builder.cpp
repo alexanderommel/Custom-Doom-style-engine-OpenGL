@@ -26,7 +26,7 @@ void SceneBuilder::buildSector(
     mapsector_t &target,
     int num_vertices
 ) {
-    std::cout << "(SceneBuilder) Creating sector\n";
+    //std::cout << "(SceneBuilder) Creating sector\n";
     //int num_vertices = vertices.size();
      //static mapsector_t mapsectorx;
      //static mapsector_t* sector = &mapsectorx;
@@ -103,7 +103,7 @@ void SceneBuilder::buildSector(
     target.floor_plane = floor_plane;
     // light level goes from 0 to 1, but expresed from range 0 to 256
     float intensity = light_level / 256.0;
-    std::cout << "(SceneBuilder) intensity-> " << intensity << "\n";
+    //std::cout << "(SceneBuilder) intensity-> " << intensity << "\n";
     if (intensity<0 || intensity>1)
     {
         intensity = 1.0;
