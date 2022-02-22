@@ -25,7 +25,6 @@ I'm learning openGL from (https://learnopengl.com/), but to make the experience 
 #  To Do
 
 - Add things (monsters, ammo, etc) to the level
-- Lighting
 - Multiple parent-type sectors 
 
 #  Credits
