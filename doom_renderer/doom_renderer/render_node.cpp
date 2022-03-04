@@ -30,6 +30,7 @@ void RenderNode::addSector(mapsector_t *sector_) {
 
 void RenderNode::renderMiddleSidedef() {
 	//std::cout << "(RenderNode) Rendering middle sidedefs\n";
+	return;
 	for (size_t i = 0; i < this->sector->num_vertices; i++)
 	{
 		//std::cout << "(RenderNode) Rendering sidedef " << i << "\n";
