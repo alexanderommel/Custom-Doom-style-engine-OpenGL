@@ -15,6 +15,8 @@ class DoomMap
 {
     public:
         DoomMap();
+        void addDirectionalLight(DirLight light);
+        void addPointLight(PointLight light, int light_pos);
         bool addSectorToRenderTree(mapsector_t *sector);
         void update();
         void render();
