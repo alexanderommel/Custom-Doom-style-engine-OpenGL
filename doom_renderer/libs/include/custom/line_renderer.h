@@ -23,7 +23,9 @@ public:
         float heigth,
 	    float y_position, // point on y axis where the wall is raised
         glm::vec3 color,
-        float light_level);
+        float light_level,
+        glm::vec3 normalVector,
+        bool verbose);
 private:
     Shader shader; 
     unsigned int VAO;
