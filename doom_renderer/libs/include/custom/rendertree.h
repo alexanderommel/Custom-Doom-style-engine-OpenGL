@@ -25,7 +25,7 @@ class RenderTree
         Shader* plane_shader;
         PlaneRenderer* plane_renderer;
     private:
-        void postOrderRendering(RenderNode* node);
+        void postOrderRendering(RenderNode* node, RenderNode* parent);
 };
 
 #endif
