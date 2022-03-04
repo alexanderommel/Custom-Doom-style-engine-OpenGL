@@ -26,7 +26,8 @@ public:
         glm::vec3 color,
         float* vertex_array,
         float plane_width,
-        float light_level
+        float light_level,
+        glm::vec3 normalVector
     );
 private:
     Shader shader; 
