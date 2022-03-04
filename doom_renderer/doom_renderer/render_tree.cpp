@@ -105,6 +105,8 @@ void RenderTree::postOrderRendering(RenderNode* node, RenderNode* parent) {
 		float* child_vertex_array = child_vertex_arrays[i];
 		this->plane_shader->Use();
 		
+		
+
 		// Render ceil plane
 		//std::cout << "(RenderTree) Rendering Clipping Ceil Plane\n";
 		Texture2D ceil_texture = ResourceManager::GetTexture(ceil_plane.texture_name);
@@ -123,6 +125,8 @@ void RenderTree::postOrderRendering(RenderNode* node, RenderNode* parent) {
 				glm::vec3(1.0f, 1.0f, 1.0f), child_vertex_array,10,0.0,
 				normalVectorC);
 		}
+
+		
 
 		// Render floor plane
 		Texture2D floor_texture = ResourceManager::GetTexture(floor_plane.texture_name);
