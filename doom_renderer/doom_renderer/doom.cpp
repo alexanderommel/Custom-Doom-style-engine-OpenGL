@@ -8,12 +8,14 @@
 #include <iostream>
 #include <custom/doom_map.h>
 #include <custom/doom_data.h>
+//#include <custom/model.h> 
 
 
-DirLight dirLight_;
+
+//DirLight dirLight_;
 
 Doom::Doom(unsigned int width_, unsigned int height_,unsigned int depth_)
-: width(width_), height(height_), depth(depth_) {}
+: widthE(width_), heightE(height_), depthE(depth_) {}
 
 Doom::~Doom(){}
 
@@ -25,7 +27,8 @@ void Doom::init() {
     std::cout << "(Doom) Loading shaders...\n";
 	ResourceManager::LoadShader("shaders/sidedef.vs", "shaders/sidedef.fs", NULL, "sidedefshader");
 	ResourceManager::LoadShader("shaders/flatplane.vs", "shaders/flatplane.fs", NULL, "flatplaneshader");
-    
+    ResourceManager::LoadShader("shaders/model_loading.vs", "shaders/model_loading.fs", NULL, "modelshader");
+    ResourceManager::LoadShader("shaders/scene_cube.vs", "shaders/scene_cube.fs", NULL, "sceneshader");
 
     
 
@@ -42,74 +45,16 @@ void Doom::init() {
     glm::vec3 red_light = glm::vec3(1.0, 0.447, 0.4627);
     sidedef_shader.SetInteger("image", 0);
 
-    /*
-    // dir light
-    //sidedef_shader.SetVector3f("dirLight.direction", dirLight_.direction);
-    //sidedef_shader.SetVector3f("dirLight.ambient", dirLight_.ambient);
-    //sidedef_shader.SetVector3f("dirLight.diffuse", dirLight_.diffuse);
-    //sidedef_shader.SetVector3f("dirLight.specular", dirLight_.specular);
-    sidedef_shader.SetVector3f("material.specular", 0.3, 0.3, 0.3);
-    // point light 
-    sidedef_shader.SetVector3f("pointLights[0].position", l1.position);
-    sidedef_shader.SetVector3f("pointLights[0].ambient", l1.ambient);
-    sidedef_shader.SetVector3f("pointLights[0].diffuse", l1.diffuse);
-    sidedef_shader.SetVector3f("pointLights[0].specular", l1.specular);
-    sidedef_shader.SetFloat("pointLights[0].constant", l1.constant);
-    sidedef_shader.SetFloat("pointLights[0].linear", l1.linear);
-    sidedef_shader.SetFloat("pointLights[0].quadratic", l1.quadratic);
-    sidedef_shader.SetVector3f("pointLights[1].position", l2.position);
-    sidedef_shader.SetVector3f("pointLights[1].ambient", l1.ambient);
-    sidedef_shader.SetVector3f("pointLights[1].diffuse", l1.diffuse);
-    sidedef_shader.SetVector3f("pointLights[1].specular", l1.specular);
-    sidedef_shader.SetFloat("pointLights[1].constant", l1.constant);
-    sidedef_shader.SetFloat("pointLights[1].linear", l1.linear);
-    sidedef_shader.SetFloat("pointLights[1].quadratic", l1.quadratic);
-    */
-    //sidedef_shader.SetMatrix4("projection", projection);
-    //sidedef_shader.SetMatrix4("view", view);
-    flatplane_shader.Use();
-    flatplane_shader.SetInteger("image", 0);
-    //flatplane_shader.SetVector3f("lightPos", lightPos);
-    //flatplane_shader.SetVector3f("lightColor", moon_light);
-    flatplane_shader.SetVector3f("material.specular", 0.3,0.3,0.3);
+    AloadTextures3();
+    //loadModels();
 
-
-    /*
-    //flatplane_shader.SetVector3f("dirLight.direction", dirLight_.direction);
-    //flatplane_shader.SetVector3f("dirLight.ambient", dirLight_.ambient);
-    //flatplane_shader.SetVector3f("dirLight.diffuse", dirLight_.diffuse);
-    //flatplane_shader.SetVector3f("dirLight.specular", dirLight_.specular);
-    // point light 
-    flatplane_shader.SetVector3f("pointLights[0].position", l1.position);
-    flatplane_shader.SetVector3f("pointLights[0].ambient", l1.ambient);
-    flatplane_shader.SetVector3f("pointLights[0].diffuse", l1.diffuse);
-    flatplane_shader.SetVector3f("pointLights[0].specular", l1.specular);
-    flatplane_shader.SetFloat("pointLights[0].constant", l1.constant);
-    flatplane_shader.SetFloat("pointLights[0].linear", l1.linear);
-    flatplane_shader.SetFloat("pointLights[0].quadratic", l1.quadratic);
-    flatplane_shader.SetVector3f("pointLights[1].position", l2.position);
-    flatplane_shader.SetVector3f("pointLights[1].ambient", l1.ambient);
-    flatplane_shader.SetVector3f("pointLights[1].diffuse", l1.diffuse);
-    flatplane_shader.SetVector3f("pointLights[1].specular", l1.specular);
-    flatplane_shader.SetFloat("pointLights[1].constant", l1.constant);
-    flatplane_shader.SetFloat("pointLights[1].linear", l1.linear);
-    flatplane_shader.SetFloat("pointLights[1].quadratic", l1.quadratic);
-    */
-    //flatplane_shader.SetMatrix4("projection", projection);
-    //flatplane_shader.SetMatrix4("view", view);
-
-    //sidedef_shader.Use();
-    //Load textures
-    loadTextures();
-
-    //Load maps
 
     std::cout << "(Doom) Loading map1...\n";
     DoomMap* first_map = new DoomMap();
     this->map = first_map;
 }
 
-void Doom::update(float dt) {
+void Doom::update(float time) {
 
 }
 
@@ -117,6 +62,9 @@ void Doom::updateProjectionAndView(glm::mat4 view, glm::mat4 proj, glm::vec3 cam
     //std::cout << "(Doom-Temp) Updating projection and view matrices\n";
     Shader sidedef_shader = ResourceManager::GetShader("sidedefshader");
     Shader flatplane_shader = ResourceManager::GetShader("flatplaneshader");
+    Shader model_shader = ResourceManager::GetShader("modelshader");
+    Shader scene_shader = ResourceManager::GetShader("sceneshader");
+    
     sidedef_shader.Use();
     glm::mat4 proj2 = glm::mat4(1.5) * proj;
     sidedef_shader.SetMatrix4("projection", proj);
@@ -126,14 +74,27 @@ void Doom::updateProjectionAndView(glm::mat4 view, glm::mat4 proj, glm::vec3 cam
     flatplane_shader.SetMatrix4("projection", proj);
     flatplane_shader.SetMatrix4("view", view);
     flatplane_shader.SetVector3f("viewPos", cameraPos);
+    model_shader.Use();
+    model_shader.SetMatrix4("projection", proj);
+    model_shader.SetMatrix4("view", view);
+    scene_shader.Use();
+    scene_shader.SetMatrix4("projection", proj);
+    scene_shader.SetMatrix4("view", view);
 }
 
 void Doom::render() {
     //std::cout << "(Doom) Rendering doom game\n";
-    this->map->render();
+    //this->map->render(1.0f); // asuming time is 1 
+    std::cout << "HOLA" << "\n";
 }
 
-void Doom::loadTextures() {
+/*
+void Doom::loadModels() {
+    //ResourceManager::LoadModel("D:/models/earth/source/Earth.obj", "earth");
+    //ResourceManager::LoadModel("D:/models/arboles/trees9.obj", "trees");
+}*/
+
+void Doom::AloadTextures3() {
     std::cout << "(Doom) Loading textures...\n";
 
     float chrome_shininess = 0.45;
