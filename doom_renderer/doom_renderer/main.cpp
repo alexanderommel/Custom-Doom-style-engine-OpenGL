@@ -10,6 +10,8 @@
 #include <GLFW/glfw3.h>
 #include <custom/camera.h>
 #include <custom/doom.h>
+#include <custom/model.h>
+#include <functional>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
@@ -1572,12 +1574,80 @@ int main() {
     //doom->map->addPointLight(l7, 22);
     // luz sangre
 
-    // end init
+    // MODELOS
+
+    // Render Scene Background
+    float vertices[] = {
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+    };
+
+    unsigned int VBOS, VAOS;
+    glGenVertexArrays(1, &VAOS);
+    glGenBuffers(1, &VBOS);
+    glBindVertexArray(VAOS);
+    glBindBuffer(GL_ARRAY_BUFFER, VBOS);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    // position attribute
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    // texture coord attribute
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    Shader scene_shader = ResourceManager::GetShader("sceneshader");
+    ResourceManager::LoadTexture("textures/sky/sky6.jpg", true, "scene_texture", 0.3, false);
+    Texture2D scene_texture = ResourceManager::GetTexture("scene_texture");
+    scene_shader.Use();
+    scene_shader.SetInteger("texture1", 0);
+
+    glBindVertexArray(0);
 
     float last_time = 0;
 
     while (!glfwWindowShouldClose(window))
     {
+
+        
 
         float current_time = glfwGetTime();
         dt = current_time - last_time;
@@ -1587,14 +1657,14 @@ int main() {
         processInput(window);
 
         glEnable(GL_DEPTH_TEST);
-        glClearColor(0.005f, 0.005f, 0.035f, 1.0f);
+        glClearColor(0.95f, 0.95f, 0.95f, 1.0f);
         glClearStencil(0);
         glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom),
             static_cast<float>(SCREEN_WIDTH) / static_cast<float>(SCREEN_HEIGHT), 0.1f,
-            static_cast<float>(22000));
+            static_cast<float>(39000));
 
         glm::mat4 view = camera.GetViewMatrix();
 
@@ -1602,9 +1672,34 @@ int main() {
 
         doom->updateProjectionAndView(view, projection, camera.Position);
 
+        //glm::mat4 projection33 = glm::perspective(glm::radians(camera.Zoom), (float)1500 / (float)900, 0.1f, 10.0f);
+        //glm::mat4 view33 = camera.GetViewMatrix();
+        //glm::mat4 model33 = glm::mat4(1.0f);
+        //model33 = glm::translate(model33, glm::vec3(0.0f, 0.0f, 0.0f));
+        //model33 = glm::scale(model33, glm::vec3(1.5f, 1.5f, 6.5f));
+        //model_shader.SetMatrix4("projection", projection33);
+        //model_shader.SetMatrix4("view", view33);
+        //model_shader.SetMatrix4("model", model33);
+        //arcoCalaveral.Draw(model_shader);
+
+        
+
+        // RENDER SCENE GIANT CUBE
+        glm::mat4 modelYY = glm::mat4(1.0f);
+        modelYY = glm::translate(modelYY, glm::vec3(0, 0, 5000));
+        modelYY = glm::rotate(modelYY,glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
+        modelYY = glm::scale(modelYY, glm::vec3(35000.0f, 35000.0f, 35000.0f));
+        scene_shader.Use();
+        scene_shader.SetMatrix4("model", modelYY);
+        scene_texture.Bind();
+        glBindVertexArray(VAOS);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+        /*
+        * Render Models
+        */
 
         doom->render();
-
+        
         
         glfwSwapBuffers(window);
         glfwPollEvents();
