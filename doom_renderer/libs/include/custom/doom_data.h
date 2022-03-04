@@ -5,6 +5,7 @@
 #define __DOOMDATA__
 
 #include <string>
+#include <glm/glm.hpp>
 
 struct mapvertex_t
 {
@@ -37,6 +38,7 @@ struct maplinedef_t
 	struct mapsidedef_t floor_back_sidedef;
 	bool is_shared;
 	struct mapsector_t* neighbor_sector;
+	glm::vec3 normal;
 };
 
 struct map_flatplane_t
@@ -55,7 +57,27 @@ struct mapsector_t
 	float ilumination;
 	float parent_ilumination;
 	bool compiled;
+	bool counterclock;
 	unsigned int num_vertices;
+};
+
+struct DirLight {
+	glm::vec3 direction;
+	glm::vec3 ambient;
+	glm::vec3 diffuse;
+	glm::vec3 specular;
+};
+
+struct PointLight {
+	glm::vec3 position;
+
+	float constant;
+	float linear;
+	float quadratic;
+
+	glm::vec3 ambient;
+	glm::vec3 diffuse;
+	glm::vec3 specular;
 };
 
 #endif
