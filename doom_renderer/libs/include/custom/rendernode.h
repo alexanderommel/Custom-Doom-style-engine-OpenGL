@@ -8,6 +8,7 @@
 #include <custom/shader.h>
 #include <custom/line_renderer.h>
 #include <custom/plane_renderer.h>
+//#include <custom/model.h>
 
 class RenderNode
 {
@@ -17,7 +18,7 @@ class RenderNode
         void addChild(RenderNode* node);
         void addSector(mapsector_t* sector_);
         bool hasChildren();
-        void render(); //It uses its children to do polygon substraction
+        void render(bool renderFloor, bool renderCeil, bool renderFloorFront); //It uses its children to do polygon substraction
         void printContent();
         unsigned int id; 
         mapsector_t *sector;
