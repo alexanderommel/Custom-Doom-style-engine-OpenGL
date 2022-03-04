@@ -3,6 +3,9 @@
 #include <iostream>
 #include <queue>
 #include <custom/resource_manager.h>
+#include <custom/model.h> 
+#include <custom/doom.h>
+
 
 bool isLinedefSharedWithSector(maplinedef_t* linedef, mapsector_t* sector, mapsector_t* neighbor_sector_);
 void setNeighborSectors(mapsector_t* s1, std::vector<RenderNode*> neighbors);
@@ -303,6 +306,7 @@ void DoomMap::render() {
 	this->render_tree->render();
 	//this->render_tree->trasversalOrderPrintContent();
 }
+
 
 void setNeighborSectors(mapsector_t* s1, std::vector<RenderNode*> neighbors) {
 	// Neighbor sectors are sectors that share a linedef
