@@ -24,7 +24,7 @@ For example, a sector may be created using the following data:
 
 #  Motivation
 
-I'm learning openGL from (https://learnopengl.com/), but to make the experience more satisfying I decided to create this renderer in paralell as I learn new concepts.
+I'm learning openGL from (https://learnopengl.com/), but to make the experience more satisfying I decided to create this renderer in parallel as I learn new concepts.
 
 #  To Do
 
