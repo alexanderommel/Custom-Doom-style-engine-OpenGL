@@ -17,6 +17,8 @@ For example, a sector may be created using the following data:
 
 ![sample](https://user-images.githubusercontent.com/70469919/153095587-5014c6b5-0719-41ff-8a6a-4c7d94412e78.png)
 ![Untitled](https://user-images.githubusercontent.com/70469919/157699272-f09b981b-852b-4ca3-a273-be787fd6399d.png)
+![Untitled2](https://user-images.githubusercontent.com/70469919/157700008-f38c4586-1f34-4652-a170-fa25ae9bffbd.png)
+
 
 
 
