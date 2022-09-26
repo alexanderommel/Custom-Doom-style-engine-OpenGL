@@ -20,17 +20,6 @@ For example, a sector may be created using the following data:
 ![Untitled2](https://user-images.githubusercontent.com/70469919/157700008-f38c4586-1f34-4652-a170-fa25ae9bffbd.png)
 
 
-
-
-#  Motivation
-
-I'm learning openGL from (https://learnopengl.com/), but to make the experience more satisfying I decided to create this renderer in parallel as I learn new concepts.
-
-#  To Do
-
-- Add things (monsters, ammo, etc) to the level
-- Multiple parent-type sectors 
-
 #  Credits
 
 - Classes such as a camera, shader, shader_img, resource_manager and texture were obtained from the site https://learnopengl.com/. 
