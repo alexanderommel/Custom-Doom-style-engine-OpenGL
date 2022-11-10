@@ -16,6 +16,8 @@ For example, a sector may be created using the following data:
 }
 ```
 
+Look at main.cpp class in order to see how sectors are defined and the map of the last two photos is built.
+
 #  Samples
 
 ![sample](https://user-images.githubusercontent.com/70469919/153095587-5014c6b5-0719-41ff-8a6a-4c7d94412e78.png)
